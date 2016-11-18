@@ -1,0 +1,18 @@
+{
+  "name": "nilsburg/phpvision",
+  "description": "Library to interact with different Vision API's",
+  "type": "library",
+  "require": {
+    "php":"~5.5.0|~5.6.0|~7.0.0",
+    "google/cloud": "0.13.*",
+    "guzzle/http": "3.9.*",
+    "imagine/imagine": "0.6.*"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "nilsburg",
+      "email": "nilsvdburg@gmail.com"
+    }
+  ]
+}
