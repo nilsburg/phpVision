@@ -14,5 +14,10 @@
       "name": "nilsburg",
       "email": "nilsvdburg@gmail.com"
     }
-  ]
+  ],
+  "autoload": {
+    "psr-4": {
+      "nilsburg\\PhpVision\\": ""
+    }
+  }
 }
