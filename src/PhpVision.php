@@ -9,40 +9,51 @@ use GuzzleHttp\Client;
 class PhpVision
 {
     public $config = [
-        'microsoft-vision'=>[
-            'api_key'=>false
+        'microsoft-vision' => [
+            'api_key' => false,
+            'url' => 'https://api.projectoxford.ai/vision/v1.0/analyze',
+            'visualFeatures' => [
+                'Categories',
+                'Description',
+                'Faces',
+                'Tags',
+                'Color',
+                'Adult',
+                'ImageType'
+            ],
+            'language' => 'en'
         ],
-        'google-vision'=>[
-            'projectId'=>false
+        'google-vision' => [
+            'projectId' => false,
+            'types' => [
+                'FACE_DETECTION',
+                'LOGO_DETECTION',
+                'LANDMARK_DETECTION',
+                'FACE_DETECTION',
+                'TEXT_DETECTION',
+                'LABEL_DETECTION',
+                'IMAGE_PROPERTIES'
+            ]
         ]
     ];
-    public $apiOptions = [
-        'microsoft-vision'=>[
-            'url'=>'https://api.projectoxford.ai/vision/v1.0/analyze',
-            'visualFeatures'=>['Categories', 'Description', 'Faces', 'Tags', 'Color', 'Adult', 'ImageType'],
-            'language'=>'en'
-        ],
-        'google-vision'=>[
-            'types'=>['FACE_DETECTION', 'LOGO_DETECTION', 'LANDMARK_DETECTION', 'FACE_DETECTION', 'TEXT_DETECTION', 'IMAGE_PROPERTIES']
-        ]
-    ];
+
     public function __construct($config = [])
     {
-        $this->config = array_merge_recursive($this->config, $config);
+        $this->config = array_replace_recursive($this->config, $config);
     }
 
     public function mVision($data = [])
     {
-        $options = $this->apiOptions['microsoft-vision'];
-        $visualFeatures = $options['visualFeatures'];
-        $requestUrl = $options['url'] . "?" . "visualFeatures=" . implode(",",
-                $visualFeatures) . "&language=" . $options['language'];
-        if ($this->config['microsoft-vision']['api_key']) {
+        $config = $this->config['microsoft-vision'];
+        $visualFeatures = $config['visualFeatures'];
+        $requestUrl = $config['url'] . "?" . "visualFeatures=" . implode(",",
+                $visualFeatures) . "&language=" . $config['language'];
+        if ($config['api_key']) {
             $client = new Client();
             $contentType = isset($data['url']) ? 'application/json' : 'application/octet-stream';
             $headers = [
                 'Content-Type' => $contentType,
-                'Ocp-Apim-Subscription-Key' => $this->config['microsoft-vision']['api_key']
+                'Ocp-Apim-Subscription-Key' => $config['api_key']
             ];
             $body = isset($data['url']) ? json_encode(['url' => $data['url']]) : (isset($data['body']) ? $data['body'] : false);
             if (!$body) {
@@ -53,7 +64,7 @@ class PhpVision
                 'body' => $body
             ]);
             $responseContent = $response->getBody()->getContents();
-            if($response->getHeader('Content-Type')[0] == 'application/json; charset=utf-8'){
+            if ($response->getHeader('Content-Type')[0] == 'application/json; charset=utf-8') {
                 $responseContent = json_decode($responseContent, true);
             }
             return $responseContent;
@@ -63,12 +74,12 @@ class PhpVision
 
     public function gVision($img)
     {
-        $options = $this->apiOptions['google-vision'];
-        if ($this->config['google-vision']['projectId']) {
+        $config = $this->config['google-vision'];
+        if ($config['projectId']) {
             $vision = new VisionClient([
-                'projectId' => $this->config['google-vision']['projectId']
+                'projectId' => $config['projectId']
             ]);
-            $image = $vision->image($img, $options['types']);
+            $image = $vision->image($img, $config['types']);
             $res = $vision->annotate($image);
             return $res;
         }
